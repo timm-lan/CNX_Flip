@@ -13,7 +13,6 @@ CREATE TABLE Deck (
   date_created DATE NOT NULL
 );
 
-
 CREATE TABLE Deck_Card (
   card_id SERIAL REFERENCES Card (card_id) ON UPDATE CASCADE,
   deck_id SERIAL REFERENCES Deck (deck_id) ON UPDATE CASCADE,
