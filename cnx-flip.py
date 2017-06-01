@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/pre-registration'
 db = SQLAlchemy(app)
 
+
 # Create our database model
 class Deck(db.Model):
     _tablename = "decks"
@@ -25,13 +26,14 @@ class Deck(db.Model):
 def index():
     return render_template('index.html')
 
+
 @app.route('/createDeck', methods=['POST'])
-def createDeck():
+def create_deck():
     if request.method == 'POST':
         deck_title = request.form['title']
-        # Check if the title dalready exist
-        if not db.session.query(Deck).filter(Deck.title == title).count() < 1:
-            new_deck = Deck(title)
+        # Check if the title already exists
+        if not db.session.query(Deck).filter(Deck.title == deck_title).count() < 1:
+            new_deck = Deck(deck_title)
             db.session.add(new_deck)
             db.session.commit()
             
