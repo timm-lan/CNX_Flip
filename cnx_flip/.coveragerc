@@ -1,0 +1,3 @@
+[run]
+source = cnx_flip
+omit = cnx_flip/test*

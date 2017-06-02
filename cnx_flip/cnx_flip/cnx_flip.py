@@ -1,6 +1,3 @@
-from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
-
 from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
