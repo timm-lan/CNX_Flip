@@ -13,6 +13,10 @@ requires = [
     'pyramid_jinja2',
     'pyramid_debugtoolbar',
     'waitress',
+    'psycopg2',
+    'sqlalchemy',
+    'zope.sqlalchemy',
+    'pyramid_tm',
 ]
 
 tests_require = [
@@ -47,5 +51,9 @@ setup(
         'paste.app_factory': [
             'main = cnx_flip:main',
         ],
+        'console_scripts': [
+            'initialize_db = cnx_flip.initialize_db:main',
+        ]
     },
+    
 )
