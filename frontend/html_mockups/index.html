@@ -20,14 +20,15 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <![endif]-->
 
 </head>
 
-<body>
-
+<body ng-app="">
+<div ng-include="'../nav/navigation.html'"></div>
     <!-- Navigation -->
     <nav class="navbar navbar-fixed-top" role="navigation" >
         <div class="container">
@@ -42,7 +43,7 @@
                 <a href="https://openstax.org/">
                   <img class="logo" src="./openstax_logo.png" alt="openstax logo" >
                 </a>
-                
+
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -58,12 +59,18 @@
                 <li>
                     <a href="#">My Profile</a>
                 </li>
-                
+                <li>
+                    <a href="home_page.html">Log Out</a>a>
+                </li>
+                <li>
+                    <a href="https://www.rice.edu"><img src="rice.png" style="height:20px"></a>
+                </li>
+
             </ul>
 
-            <!-- /.navbar-collapse -->
+            <!-- /.navbar-collapse --
         </div>
-        <!-- /.container -->
+        <!-- /.container --
     </nav>
 
     <!-- Page Content -->
@@ -72,13 +79,12 @@
         <!-- Page Header -->
         <div class="row">
             <div class="col-lg-6" "text-center">
-                <h1 class="page-header" "text-center">My Flashcards
-                </h1>
+                <h1 class="page-header" "text-center">OpenStax FlipCards</h1>
                 <div class="btn-group text-right" role="group" aria-label="Basic example">
                   <button type="button" class="btn btn-secondary text-right"><i class="glyphicon glyphicon-th-list"></i></button>
                   <button type="button" class="btn btn-secondary text-right"><i class="glyphicon glyphicon-th-large"></i></button>
+                </div>
             </div>
-          </div>            
         </div>
         <!-- /.row -->
 
