@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="${request.locale_name}">
+  <head>
+    <script type="text/javascript"
+src="${request.static_url('cnx_flip:static/jquery-3.2.1.js')}"></script>
+    <script type="text/javascript"
+src="${request.static_url('cnx_flip:static/hello_ajax.js')}"></script>
+  </head>
+  <body>
+    <h1>${project}</h1>
+    <button onclick="do_some_ajax()">Do some ajax</button>     
+  </body>
+</html>
