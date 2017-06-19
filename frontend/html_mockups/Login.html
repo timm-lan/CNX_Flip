@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log In</title>
+    <link rel="stylesheet" type="text/css" href="LogIn.css" />
+</head>
+<body>
+<nav>
+    <li style="color: rebeccapurple; list-style-type: none;"><a href="home_page.html" style="text-decoration: none;">Home</a></li>
+</nav>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<div class="login-page">
+    <div>
+        <img src="openstax_logo.png" style="width: 350px;height: 60px;"></img>
+    </div>
+    <div class="form">
+        <form class="register-form">
+            <input type="text" placeholder="name"/>
+            <input type="password" placeholder="password"/>
+            <input type="text" placeholder="email address"/>
+            <button>create</button>
+            <p class="message">Already registered? <a href="#">Sign In</a></p>
+        </form>
+        <form class="login-form">
+            <button>Guest login</button>
+            <p class="message" style="color: red">Guest Users' Cards will not be saved!<p>
+            <button style="background-color: orangered"><a style="text-decoration: none; color: white" href="Login-inner.html">login with Tutor Account</a></button>
+            <button style="background-color: darkslateblue"><a style="text-decoration: none; color: white" href="Login-inner.html">login with OpenStax Account</a></button>
+            <p class="message">Not registered? <a href="#">Create an account</a></p>
+            <p class="message"><a href="#">Forgot Passward?</a></p>
+        </form>
+    </div>
+    <script src="create_account.js"></script>
+</div>
+</body>
+</html>
