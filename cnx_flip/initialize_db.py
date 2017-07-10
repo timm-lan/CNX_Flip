@@ -6,7 +6,7 @@ from sqlalchemy import engine_from_config
 
 from pyramid.paster import setup_logging, get_appsettings
 
-from .models import DBSession, Card, Base
+from .models import DBSession, User, Deck, DeckCombo, Card, Base
 
 
 def usage(argv):
@@ -26,7 +26,6 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
-        pass
-#         model = Page(title='Root', body='<p>Root</p>')
-#         model = Card(term='new term1', definition='def1')
-#         DBSession.add(model)
+        # pass
+        model = User(user_name='admin')
+        DBSession.add(model)

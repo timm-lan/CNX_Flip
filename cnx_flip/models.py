@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Boolean, Text, ForeignKey
+from sqlalchemy import Table, Column, Integer, Boolean, Text, ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -17,18 +17,46 @@ DBSession = scoped_session(
 
 Base = declarative_base()
 
-# class Deck(Base):
-#     __tablename__= 'decks'
-#     id = Column(Integer, primary_key=True)
-#     title = Column(String(100), unique=True) 
-#     cards = relationship("cards")
+map_table_deckcard = Table('deckcard_map', Base.metadata,
+    Column('deck_id', Integer, ForeignKey('decks.id')),
+    Column('card_id', Integer, ForeignKey('cards.id'))
+)
+
+map_table_deckcombodeck = Table('deckcombodeck_map', Base.metadata,
+    Column('deckcombo_id', Integer, ForeignKey('deckcombos.id')),
+    Column('deck_id', Integer, ForeignKey('decks.id'))
+)
+
+map_table_userdeckcombo = Table('userdeckcombo_map', Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.id')),
+    Column('deckcombo_id', Integer, ForeignKey('deckcombos.id'))
+)
+
+class User(Base):
+    __tablename__= 'users'
+    id = Column(Integer, primary_key=True)
+    user_name = Column(Text, unique=True) 
+    deckcombos = relationship("DeckCombo", secondary=map_table_userdeckcombo)
+    # decks = relationship("cards")
+
+class DeckCombo(Base):
+    __tablename__= 'deckcombos'
+    id = Column(Integer, primary_key=True)
+    deck_combo_name = Column(Text, unique=True) 
+    color = Column(Text)
+    decks = relationship("Deck", secondary=map_table_deckcombodeck)
+
+class Deck(Base):
+    __tablename__= 'decks'
+    id = Column(Integer, primary_key=True)
+    title = Column(Text, unique=True)
+    cards = relationship("Card", secondary=map_table_deckcard)
 
 class Card(Base):
     __tablename__= 'cards'
     id = Column(Integer, primary_key=True)
     term = Column(Text, unique=True)
     definition = Column(Text)
-#     parent_id = Column(Integer, ForeignKey=("decks.id")
 
 # ??
 class Root(object):

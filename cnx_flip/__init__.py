@@ -14,12 +14,30 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
 
     config = Configurator(settings=settings)
+    ###################################################################
     config.include('pyramid_jinja2')
     config.include('pyramid_mako')
     config.include('pyramid_chameleon')
+    ###################################################################
     config.add_static_view('static', 'static', cache_max_age=3600)
+    ###################################################################
     config.add_route('home', '/')
 #     config.add_route('generate_ajax_data', '/ajax_view')
+    ###################################################################
     config.add_route('add_card', '/addCard')
+    config.add_route('add_card_tmp', '/addCardTmp')
+    ###################################################################
+
+    # config.add_route('get_decks', '/get_decks/{user_id}')
+    config.add_route('get_decks', 'api/getDecks')
+    config.add_route('testtest', '/app')
+    ###################################################################
+    # config.add_route('get_one_deck', '/get_one_deck/{deck_id}')
+
+    config.add_route('add_user', 'addUser')
+    config.add_route('add_deck', 'addDeck')
+
+    config.add_route('update_from_db', 'update')
+
     config.scan()
     return config.make_wsgi_app()
