@@ -30,7 +30,7 @@
 <body>
 <!-- Navigation -->
 <nav class="navbar navbar-fixed-top" role="navigation" >
-    <div class="navcontainer">
+    <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -56,13 +56,19 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a href="Login.html">Log In/Register</a>
+                    <a href="home_page.html">Home</a>
                 </li>
                 <li>
-                    <a href="book_collections.html">Book Collections</a>
+                    <a href="#">Log In</a>
                 </li>
                 <li>
-                    <a href="www.rice.edu"><img src="rice.png" style="height:20px"></a>
+                    <a href="#">Register</a>
+                </li>
+                <li>
+                    <a href="#">Book Collections</a>
+                </li>
+                <li>
+                    <a href="https://www.rice.edu"><img src="rice.png" style="height:20px"></a>
                 </li>
 
             </ul>
@@ -70,59 +76,51 @@
             <!-- /.navbar-collapse -->
         </div>
         <!-- /.container -->
-    </nav>
-
-<!-- Main Page Content-->
-<div style="text-align: center;font-size: 46px;color: tomato;background-image:url('main-page-title.jpg')">Welcome to OpenStax Flip</div>
-<div id="mainpage-image" style="background-image:url('main-page1.jpg');width: 1425px;height: 1080px;">
-    <button style="margin-top: 340px;margin-left: 210px;font-size: 46px; font-family:'Arial Rounded MT Bold';background-color: orangered;"><a style="color: white" href="index.html">Try It Now!</a></button>
-    <button style="margin-left:300px;font-size: 46px; font-family:'Arial Rounded MT Bold';background-color: orangered"><a style="color: white" href="#fs-id123">Want to Learn More?</a></button>
+</nav>
+<!--Main content begins-->
+<div class="banner">
+    <div style="background-image: url('splash.jpg');width:1420px;height:480px;">
+        <div style="color: darkblue">
+            <h1>Discover learning</h1>
+            <h1>materials in an Brand </h1>
+            <h1>New way.</h1>
+        </div>
+        <div style="font-size: 20px;margin-top: 60px;">
+            <p>View and share free educational material in flip-cards form </p>
+            <p>that can be organized as courses, books, reports</p>
+            <p>or other academic assignments.</p>
+        </div>
+    </div>
 </div>
-<div id ="fs-id123" class="blockquote" style="width:475px;height:300px;border:5px solid deepskyblue; margin-top:0px; font-size: 30px;text-align: center; font-family: 'Arial Rounded MT Bold'">
-    <h1>What is OpenStax Flip?</h1>
-    <p>OpenStax Flip will provide our textbook users with an app to enhance their mastery of content by practicing retrieval techniques.<p/>
+<h2 style="color: darkblue;margin-top: 0px;">OpenFlip Library</h2>
+<div class="totalbooks">
+    <div class="books" style="display: flex;">
+        <div class="book">
+            <a href="https://cnx.org/contents/AgQDEnLI@7.12:TrIRM88K@5/Introduction-to-Sociology" tabindex="-1"><img src="collections/book1.png" width="125" height="162" alt="Introduction to Sociology"></a>
+            <div style="margin-top: -185px;margin-left: 160px;">
+                <h3 class="small-header"><a href="https://cnx.org/contents/AgQDEnLI@7.12:TrIRM88K@5/Introduction-to-Sociology">Introduction to Sociology</a></h3>
+                <p>Introduction to Sociology was written by teams of sociology professors and writers and peer-reviewed...</p>
+                <div class="read-more" style="margin-top: 75px;margin-left: 475px;"><a href="https://openstax.org/details/books/introduction-sociology-2e">Read More</a></div>
+            </div>
+        </div>
+        <div class="book">
+            <a href="https://cnx.org/contents/GFy_h8cu@10.106:rZudN6XP@2/Introduction" tabindex="-1"><img src="collections/book2.png" width="125" height="162" alt="Biology"></a>
+            <div style="margin-top: -185px;margin-left: 160px;">
+                <h3 class="small-header"><a href="https://cnx.org/contents/GFy_h8cu@10.106:rZudN6XP@2/Introduction">Biology</a></h3>
+                <p>Biology is designed for multi-semester biology courses for science majors. It is grounded on an evol...</p>
+                <div class="read-more" style="margin-top: 75px;margin-left: 475px;"><a href="https://openstax.org/details/books/biology">Read More</a></div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="blockquote-image" style="background-image:url('blockquote1.jpg');width:475px;height:300px; margin-top:-300px;margin-left:475px;"></div>
-<div class="blockquote-image" style="background-image:url('blockquote2.jpg');width:475px;height:300px;"></div>
-<div class="blockquote-image" style="background-image:url('blockquote3.jpg');width:475px;height:300px;margin-top: -300px; margin-left: 950px;"></div>
-<div class="blockquote" style="width:475px;height:300px;border:5px solid deepskyblue; margin-top: -300px; margin-left: 475px; font-size: 30px;text-align: center; font-family: 'Arial Rounded MT Bold'">
-    <h1>What are Problems?</h1>
-    <p>Auxiliary contents are not easily accessible to students.Besides, Students who doesn't join a Tutor class lack practice materials.<p/>
-</div>
-<div class="blockquote" style="width:475px;height:300px;border:5px solid deepskyblue; margin-top:-600px; margin-left: 950px; font-size: 30px;text-align: center; font-family: 'Arial Rounded MT Bold'">
-    <h1>What are Solutions?</h1>
-    <p>To develop a web & mobile app to supplement content from textbooks and Tutor, and serve as an interface for students to practice.</p>
-</div>
-<script language =javascript>
-    var curIndex = 0;
-    var timeInterval=1500;
-    var arr=new Array();
-    arr[0]="main-page1.jpg"
-    arr[1]="main-page2.jpg"
-    arr[2]="main-page3.jpg"
-    arr[3]="main-page4.jpg"
-    setInterval(change_image,timeInterval);
-    function change_image()
-    {
-        var photo=document.getElementById("mainpage-image");
-        if (curIndex==arr.length-1)
-        {
-            curIndex=0;
-        }
-        else
-        {
-            curIndex+=1;
-        }
-        photo.style.backgroundImage="url("+arr[curIndex]+")";
-    }
-</script>
+<a href="https://openstax.org/subjects"><button style="margin-left:560px;margin-top:30px;font-size: 20px; font-family:'Arial Rounded MT Bold';background-color: powderblue;color: white;">Explore All Amazing Books!</button></a>
 </body>
 <!--Here footer starts-->
-<footer style="background-color: #424242;height: 300px;">
+<footer style="background-color: #424242;height: 300px;margin-top: -300px;">
     <div style="font-size: 20px">
         <div style="color: #9a9a9b;margin-top: 300px;text-align: center;">
             <h1>OpenStax Flip.
-            <span style="color: #9a9a9b">The future of education.</span>
+                <span style="color: #9a9a9b">The future of education.</span>
             </h1>
         </div>
         <div>
@@ -132,9 +130,10 @@
         </div>
     </div>
     <ul style="text-align: center; margin-top: -20px;">
-        <li style="display: inline;"><a href="https://www.linkedin.com/company/openstax"><img src="social1.png" style="width:63px;height: 63px;"></img></a></li>
+        <li style="display: inline;"><a href="https://www.linkedin.com/company/openstax"><img src="social1.png" style="width:60px;height: 60px;"></img></a></li>
         <li style="display: inline;"><a href="https://www.facebook.com/openstax"><img src="social2.png" style="width: 70px;height: 70px;"></img></a></li>
-        <li style="display: inline;"><a href="https://twitter.com/openstax"><img src="social3.png" style="width: 57px;height: 57px;"></img></a></li>
+        <li style="display: inline;"><a href="https://twitter.com/openstax"><img src="social3.png" style="width: 60px;height: 60px;"></img></a></li>
     </ul>
 </footer>
+</body>
 </html>
