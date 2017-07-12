@@ -13,6 +13,5 @@
 </div>
 
 <h1>Hi ${name}</h1>
-<p>Visit <a href="${request.route_url('hello')}">hello</a></p>
 </body>
 </html>
