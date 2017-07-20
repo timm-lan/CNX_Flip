@@ -9,7 +9,6 @@ def main(global_config, **settings):
 #     engine = engine_from_config(settings, 'sqlalchemy.')
 
     engine = create_engine('postgresql+psycopg2://Tim:Qasdew123@localhost/flashcarddb')
-
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
 
@@ -30,6 +29,7 @@ def main(global_config, **settings):
 
     # config.add_route('get_decks', '/get_decks/{user_id}')
     config.add_route('get_decks', 'api/getDecks')
+    config.add_route('get_deck', 'api/getDeck/{id}')
     config.add_route('testtest', '/app')
     ###################################################################
     # config.add_route('get_one_deck', '/get_one_deck/{deck_id}')

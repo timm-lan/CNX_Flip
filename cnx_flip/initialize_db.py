@@ -6,7 +6,7 @@ from sqlalchemy import engine_from_config
 
 from pyramid.paster import setup_logging, get_appsettings
 
-from .models import DBSession, User, Deck, DeckCombo, Card, Base
+from .models import *
 
 
 def usage(argv):
@@ -25,7 +25,10 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
+    
     with transaction.manager:
-        # pass
+        # DBSession.execute('DROP DATABASE IF EXISTS flashcarddb')
+        # DBSession.execute('CREATE DATABASE falshcarddb')
+        
         model = User(user_name='admin')
         DBSession.add(model)
