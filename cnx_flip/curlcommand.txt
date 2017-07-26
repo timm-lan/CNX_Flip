@@ -1,0 +1,3 @@
+curl -H "Content-Type: application/json" -X POST -d '{"deckid":1,"term":"newTerm", "definition":"new def"}' http://localhost:5000/api/cards
+
+curl -H "Content-Type: application/json" -X PUT -d '{"id":1,"term":"hahaha", "definition":"hahaha"}' http://localhost:5000/api/cards

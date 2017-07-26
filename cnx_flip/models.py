@@ -31,8 +31,11 @@ Base = declarative_base()
 # )
 class User(Base):
     __tablename__= 'users'
+    
+    # autoincrement has to be False
+
     id = Column(Integer, primary_key=True)
-    user_name = Column(Text, unique=True) 
+    user_name = Column(Text, unique=True)
     # This is for many-many
     # decks = relationship("Deck", secondary=map_table_userdeck, back_populates="users")
     decks = relationship("Deck")

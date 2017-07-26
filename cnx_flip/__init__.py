@@ -30,12 +30,13 @@ def main(global_config, **settings):
     # config.add_route('get_decks', '/get_decks/{user_id}')
     config.add_route('get_decks', 'api/getDecks')
     config.add_route('get_deck', 'api/getDeck/{id}')
-    config.add_route('testtest', '/app')
+    config.add_route('api_card', 'api/cards')
+    # config.add_route('api_deck', 'api/decks')
     ###################################################################
     # config.add_route('get_one_deck', '/get_one_deck/{deck_id}')
 
-    config.add_route('add_user', 'addUser')
-    config.add_route('add_deck', 'addDeck')
+    # config.add_route('add_user', 'addUser')
+    # config.add_route('add_deck', 'addDeck')
 
     config.add_route('update_from_db', 'update')
 

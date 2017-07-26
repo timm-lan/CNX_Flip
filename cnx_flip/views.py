@@ -7,13 +7,13 @@ from mock_pull_engine import *
 import json
 from mock_pull_engine import *
 
+USER = 'admin'
 def card2dict(cardResult):
     """
         Convert a RowProxy Object into a json
     """
     d = {'cards': []}
     for card_row in cardResult:
-        print card_row
         card = {}
         card['id'] = card_row.id
         card['term'] = card_row.term
@@ -71,14 +71,135 @@ def add_card_view(request):
 @view_config(route_name='update_from_db', renderer = 'json')
 def update(request):
     put_stuff_in_db()
-    # req_post = request.POST
-    # title = str(req_post['title'])
-    # color = str(req_post['color'])
-    # with transaction.manager:
-    #     model = Deck(title=title, color=color)
-    #     DBSession.add(model)
     return {'update': 'success'}
 
+
+
+# @view_config(route_name='api_deck', renderer = 'json')
+# def api_deck(request):
+#     method = request.method
+#     params = request.body
+    
+#     # To answer the chrome
+#     if method == 'OPTIONS':
+#         response = Response()
+#         response.headers.update({'Access-Control-Allow-Origin': '*', \
+#             "Access-Control-Allow-Method": 'GET, POST, PUT, DELETE, OPTIONS', \
+#             "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+#         return response
+
+#     # params = request.json_body
+#     params = json.loads(params)
+#     # create card
+#     if method == 'POST':
+#         title = str(params['title'])
+#         with transaction.manager:
+#             cur_user = DBSession.query(User).filter(Deck.id==deckid).first()
+            
+#             db_deck = DBSession.query(Deck).filter(Deck.id==deckid).first()
+#             new_card = Card(term=params['term'], definition=params['definition'])
+#             DBSession.add(new_card)
+#             db_deck.cards.append(new_card)
+#             print 'here?'
+#             results = {}
+#             results = card2dict(db_deck.cards)
+#             results['id'] = int(db_deck.id)
+#             results['color'] = str(db_deck.color)
+#             results['title'] = str(db_deck.title)
+#             print results
+#             # return results
+#             response = Response(body=json.dumps(results))
+#             response.headers.update({'Access-Control-Allow-Origin': '*', \
+#                 "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+#             return response
+        
+#     elif method == 'PUT':
+#         cardid = params['id']
+#         with transaction.manager:
+#             db_card = DBSession.query(Card).filter(Card.id==cardid).first()
+#             deckid = db_card.deck_id
+#             db_card.term = params['term']
+#             db_card.definition = params['definition']
+#             db_deck = DBSession.query(Deck).filter(Deck.id==deckid).first()
+#             # build the response
+#             results = {}
+#             results = card2dict(db_deck.cards)
+#             results['id'] = int(db_deck.id)
+#             results['color'] = str(db_deck.color)
+#             results['title'] = str(db_deck.title)
+#             # return results
+#             response = Response(body=json.dumps(results))
+#             response.headers.update({'access-control-allow-origin': '*', \
+#                 "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+#             return response
+        
+#     return {'status': 'NOT OK'}
+
+
+
+
+
+
+@view_config(route_name='api_card', renderer = 'json')
+def api_card(request):
+    method = request.method
+    params = request.body
+    print request.method
+
+    # To answer the chrome?
+    if method == 'OPTIONS':
+        response = Response()
+        response.headers.update({'Access-Control-Allow-Origin': '*', \
+            "Access-Control-Allow-Method": 'GET, POST, PUT, DELETE, OPTIONS', \
+            "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+        return response
+
+    # params = request.json_body
+    params = json.loads(params)
+    # create card
+    if method == 'POST':
+        print 'post!'
+        print params
+        deckid = int(params['deckid'])
+        with transaction.manager:
+            db_deck = DBSession.query(Deck).filter(Deck.id==deckid).first()
+            new_card = Card(term=params['term'], definition=params['definition'])
+            DBSession.add(new_card)
+            db_deck.cards.append(new_card)
+            print 'here?'
+            results = {}
+            results = card2dict(db_deck.cards)
+            results['id'] = int(db_deck.id)
+            results['color'] = str(db_deck.color)
+            results['title'] = str(db_deck.title)
+            print results
+            # return results
+            response = Response(body=json.dumps(results))
+            response.headers.update({'Access-Control-Allow-Origin': '*', \
+                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+            return response
+        
+    elif method == 'PUT':
+        cardid = params['id']
+        with transaction.manager:
+            db_card = DBSession.query(Card).filter(Card.id==cardid).first()
+            deckid = db_card.deck_id
+            db_card.term = params['term']
+            db_card.definition = params['definition']
+            db_deck = DBSession.query(Deck).filter(Deck.id==deckid).first()
+            # build the response
+            results = {}
+            results = card2dict(db_deck.cards)
+            results['id'] = int(db_deck.id)
+            results['color'] = str(db_deck.color)
+            results['title'] = str(db_deck.title)
+            # return results
+            response = Response(body=json.dumps(results))
+            response.headers.update({'access-control-allow-origin': '*', \
+                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+            return response
+        
+    return {'status': 'NOT OK'}
 
 
 @view_config(route_name='get_decks', renderer = 'json')
@@ -116,6 +237,7 @@ def get_deck(request):
         deck = card2dict(decks_query.cards)
         deck['title'] = str(decks_query.title)
         deck['color'] = 'Green'
+        deck['id'] = idx
     
     response = Response(body=json.dumps(deck))    
     response.headers.update({'access-control-allow-origin': 'http://localhost:3000', \
