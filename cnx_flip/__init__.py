@@ -31,7 +31,7 @@ def main(global_config, **settings):
     config.add_route('get_decks', 'api/getDecks')
     config.add_route('get_deck', 'api/getDeck/{id}')
     config.add_route('api_card', 'api/cards')
-    # config.add_route('api_deck', 'api/decks')
+    config.add_route('api_deck', 'api/decks')
     ###################################################################
     # config.add_route('get_one_deck', '/get_one_deck/{deck_id}')
 
