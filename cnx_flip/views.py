@@ -108,7 +108,7 @@ def api_deck(request):
             response = Response(body=json.dumps(results))
             response.headers.update({'Access-Control-Allow-Origin': '*', \
                 "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
-            
+            return response
     elif method == 'PUT':
         deck_id = params['id']
         print "LOOK HERE"
@@ -139,6 +139,7 @@ def api_deck(request):
             DBSession.query(Card).filter(Card.deck_id==deck_id).delete(synchronize_session="evaluate")
             DBSession.query(Deck).filter(Deck.id==deck_id).delete(synchronize_session="evaluate")
             print "$$$$$$$$$$$$$$$$$$"
+            return {'status': 'delete successful'}
 
     return {'status': 'NOT OK'}
 
