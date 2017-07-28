@@ -1,16 +1,20 @@
-from pyramid.view import view_config
-from .models import * #DBSession, Card, Base
+import json
+import pyramid.httpexceptions as exc
 import transaction
+
+from pyramid.view import view_config
 from pyramid.response import Response
 from mockdecks import USER1_DECKS
 from mock_pull_engine import *
-import json
 from mock_pull_engine import *
+from .models import * #DBSession, Card, Base
 
 USER = 'admin'
+
+
 def card2dict(cardResult):
     """
-        Convert a RowProxy Object into a json
+    Convert a RowProxy Object into a json
     """
     d = {'cards': []}
     for card_row in cardResult:
@@ -21,14 +25,14 @@ def card2dict(cardResult):
         d['cards'].append(card)
     return d
 
-# cardss = [
+# cards = [
 #       { 'id': 1, 'term': 'Test term 1', 'definition': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed orci nisl, sagittis ac tincidunt lacinia, sodales ac nibh. Fusce venenatis eleifend tortor, nec placerat eros laoreet sit amet. Quisque rhoncus non diam eu elementum. Praesent pulvinar nisi a urna lobortis auctor sit amet sed est. Aliquam eget orci sapien. Vestibulum.' },
 #       { 'id': 2, 'term': 'Test term 2', 'definition': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed orci nisl, sagittis ac tincidunt lacinia, sodales ac nibh. Fusce venenatis eleifend tortor, nec placerat eros laoreet sit amet. Quisque rhoncus non diam eu elementum. Praesent pulvinar nisi a urna lobortis auctor sit amet sed est. Aliquam eget orci sapien. Vestibulum.' },
 #       { 'id': 3, 'term': 'Test term 3', 'definition': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed orci nisl, sagittis ac tincidunt lacinia, sodales ac nibh. Fusce venenatis eleifend tortor, nec placerat eros laoreet sit amet. Quisque rhoncus non diam eu elementum. Praesent pulvinar nisi a urna lobortis auctor sit amet sed est. Aliquam eget orci sapien. Vestibulum.' },
 #       { 'id': 4, 'term': 'Test term 4', 'definition': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed orci nisl, sagittis ac tincidunt lacinia, sodales ac nibh. Fusce venenatis eleifend tortor, nec placerat eros laoreet sit amet. Quisque rhoncus non diam eu elementum. Praesent pulvinar nisi a urna lobortis auctor sit amet sed est. Aliquam eget orci sapien. Vestibulum.' },
 #       { 'id': 5, 'term': 'Test term 5', 'definition': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed orci nisl, sagittis ac tincidunt lacinia, sodales ac nibh. Fusce venenatis eleifend tortor, nec placerat eros laoreet sit amet. Quisque rhoncus non diam eu elementum. Praesent pulvinar nisi a urna lobortis auctor sit amet sed est. Aliquam eget orci sapien. Vestibulum.' },
 #     ]
-# deckss = [
+# decks = [
 #       { 'id': 1, 'name': "Test Deck 1", 'cards': cardss, 'color': 'Green'},
 #       { 'id': 2, 'name': "Test Deck 2", 'cards': cardss, 'color': '#8f8f8f'},
 #       { 'id': 3, 'name': "Test Deck 3", 'cards': cardss, 'color': '#8f8f8f'},
@@ -91,14 +95,32 @@ def api_deck(request):
     
     params = json.loads(params)
 
-    # create deck
+    # Create a deck
     if method == 'POST':
+        # Error handler: check correct query
+        if ("title" not in params) or ("color" not in params) or (
+            "cards" not in params):
+            return exc.HTTPBadRequest()
+
         with transaction.manager:
-            user = DBSession.query(User).filter(User.user_name=="admin").first()
+            user_list = DBSession.query(User).filter(User.user_name==USER)
+
+            # Error handler: check if user exists
+            if user_list.count() == 0:
+                return exc.HTTPNotFound()
+
+            user = user_list.first()
+
+            # Error handler: check if new deck title conflicts existing titles
+            same_title_deck = DBSession.query(Deck).filter(Deck.title == params["title"] and Deck.user_id == user.id)
+            if same_title_deck.count() != 0:
+                return exc.HTTPConflict()
+
             new_deck = Deck(title=params['title'], color=params['color'])
             DBSession.add(new_deck)
             user.decks.append(new_deck)
 
+            # build response
             results = {}
             results['cards'] = []
             results['id'] = int(new_deck.id)
@@ -109,38 +131,65 @@ def api_deck(request):
             response.headers.update({'Access-Control-Allow-Origin': '*', \
                 "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
             return response
+
+    # Edit a deck
     elif method == 'PUT':
-        deck_id = params['id']
-        print "LOOK HERE"
-        print "deck_id is " + str(deck_id)
+        # Error handling: check correct query
+        if ("title" not in params) or ("color" not in params) or (
+            "cards" not in params) or ("deckid" not in params):
+            return exc.HTTPBadRequest()
+        elif type(params["deckid"]) != int:
+            return exc.HTTPBadRequest()
+
+        deck_id = params['deckid']
         with transaction.manager:
-            db_deck = DBSession.query(Deck).filter(Deck.id==int(deck_id)).first()
+            deck_list = DBSession.query(Deck).filter(Deck.id == deck_id)
+
+            # Error handler: check if deck exists
+            if deck_list.count() == 0:
+                return exc.HTTPNotFound()
+
+            db_deck = deck_list.first()
+            same_title_deck = DBSession.query(Deck).filter(Deck.title == params['title'] and Deck.user_id == db_deck.user_id)
+
+            # Error handler: check for duplicate titles
+            if same_title_deck.count() != 0:
+                return exc.HTTPConflict()
+
             db_deck.title = params['title']
             db_deck.color = params['color']
 
-            # build the response 
-            results = {}
+            # Build the response
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
             results['title'] = str(db_deck.title)
             results['color'] = str(db_deck.color)
-
 
             response = Response(body=json.dumps(results))
             response.headers.update({'access-control-allow-origin': '*',
                 "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
             return response
 
+    # Delete a deck
     elif method == 'DELETE':
-        # note: need id to be in the param
-        deck_id = params['id']
+        # Error handler: check correct query
+        if "deckid" not in params:
+            return exc.HTTPBadRequest()
+        elif type(params["deckid"]) != int:
+            return exc.HTTPBadRequest()
+
+        deck_id = params['deckid']
         with transaction.manager:
-            # delete cards first to avoid foreign key constraints
+            deck_list = DBSession.query(Deck).filter(Deck.id==deck_id)
+
+            # Error handler: check if deck exists
+            if deck_list.count() == 0:
+                return exc.HTTPNotFound()
+
+            # Delete cards first to avoid foreign key constraints
             DBSession.query(Card).filter(Card.deck_id==deck_id).delete(synchronize_session="evaluate")
             DBSession.query(Deck).filter(Deck.id==deck_id).delete(synchronize_session="evaluate")
-            print "$$$$$$$$$$$$$$$$$$"
             return {'status': 'delete successful'}
-
     return {'status': 'NOT OK'}
 
 
@@ -160,60 +209,101 @@ def api_card(request):
 
     # params = request.json_body
     params = json.loads(params)
-    # create card
+
+    # Create card
     if method == 'POST':
-        print 'post!'
-        print params
+        # Error handler: check for correct query
+        if ("term" not in params) or ("definition" not in params) or ("deckid" not in params):
+            return exc.HTTPBadRequest()
+        elif type(params["deckid"]) != int:
+            return exc.HTTPBadRequest()
+
         deckid = int(params['deckid'])
         with transaction.manager:
-            db_deck = DBSession.query(Deck).filter(Deck.id==deckid).first()
+            deck_list= DBSession.query(Deck).filter(Deck.id==deckid)
+
+            # Error handler: check if deck exists
+            if deck_list.count() == 0:
+                return exc.HTTPNotFound()
+
+            db_deck = deck_list.first()
             new_card = Card(term=params['term'], definition=params['definition'])
             DBSession.add(new_card)
             db_deck.cards.append(new_card)
-            print 'here?'
-            results = {}
+
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
             results['color'] = str(db_deck.color)
             results['title'] = str(db_deck.title)
-            print results
-            # return results
+
+            # Return results
             response = Response(body=json.dumps(results))
             response.headers.update({'Access-Control-Allow-Origin': '*', \
                 "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
             return response
-        
+
+    # Edit a card
     elif method == 'PUT':
-        cardid = params['id']
+        # Error handler: check for correct query
+        if ("term" not in params) or ("definition" not in params) or ("cardid" not in params):
+            return exc.HTTPBadRequest()
+        elif type(params["cardid"]) != int:
+            return exc.HTTPBadRequest()
+
+        cardid = params['cardid']
         with transaction.manager:
-            db_card = DBSession.query(Card).filter(Card.id==cardid).first()
+            card_list = DBSession.query(Card).filter(Card.id==cardid)
+
+            # Error handler: check if card exists
+            if card_list.count() == 0:
+                return exc.HTTPNotFound()
+
+            db_card = card_list.first()
             deckid = db_card.deck_id
             db_card.term = params['term']
             db_card.definition = params['definition']
-            db_deck = DBSession.query(Deck).filter(Deck.id==deckid).first()
+
+            deck_list= DBSession.query(Deck).filter(Deck.id==deckid)
+
+            # Error handler: check if the card has a corresponding deck
+            if deck_list.count() == 0:
+                return exc.HTTPNotFound()
+            db_deck = deck_list.first()
+
             # build the response
-            results = {}
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
             results['color'] = str(db_deck.color)
             results['title'] = str(db_deck.title)
-            # return results
+
+            # Return results
             response = Response(body=json.dumps(results))
             response.headers.update({'access-control-allow-origin': '*', \
                 "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
             return response
 
+    # Delete a card
     elif method == 'DELETE':
-        cardid = params['id']
+        # Error handler: check for correct query
+        if ("cardid" not in params):
+            return exc.HTTPBadRequest()
+        elif type(params["cardid"]) != int:
+            return exc.HTTPBadRequest()
+
+        cardid = params['cardid']
         with transaction.manager:
-            # note: some cards in the databse don't have a deckid currently
-            db_card = DBSession.query(Card).filter(Card.id==cardid).first()
+            card_list = DBSession.query(Card).filter(Card.id==cardid)
+            # Error handler: check if card exists
+            if card_list.count() == 0:
+                return exc.HTTPNotFound()
+
+            db_card = card_list.first()
             deckid = db_card.deck_id
+
             DBSession.query(Card).filter(Card.id == cardid).delete(synchronize_session='evaluate')
             db_deck = DBSession.query(Deck).filter(Deck.id==deckid).first()          
             
             # build the response of a deck dictionary 
-            results = {}
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
             results['color'] = str(db_deck.color)
@@ -224,7 +314,6 @@ def api_card(request):
             response.headers.update({'access-control-allow-origin': '*', \
                 "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
             return response
-
     return {'status': 'NOT OK'}
 
 
@@ -239,7 +328,6 @@ def get_decks(request):
             deck['color'] = 'Green'
             deck['id'] = int(deck_object.id)
             decks.append(deck)
-        
 
     response = Response(body=json.dumps(decks))
     response.headers.update({'access-control-allow-origin': 'http://localhost:3000', \
