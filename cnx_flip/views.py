@@ -11,7 +11,6 @@ from .models import * #DBSession, Card, Base
 
 USER = 'admin'
 
-
 def card2dict(cardResult):
     """
     Convert a RowProxy Object into a json
@@ -88,9 +87,11 @@ def api_deck(request):
     # To answer the chrome?
     if method == 'OPTIONS':
         response = Response()
-        response.headers.update({'Access-Control-Allow-Origin': '*', \
-            "Access-Control-Allow-Method": 'GET, POST, PUT, DELETE, OPTIONS', \
-            "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+        response.headers.update({
+            'Access-Control-Allow-Origin': 'http://localhost:3000', \
+            "Access-Control-Allow-Methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+            "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+        })
         return response
     
     params = json.loads(params)
@@ -128,8 +129,11 @@ def api_deck(request):
             results['color'] = str(new_deck.color)
 
             response = Response(body=json.dumps(results))
-            response.headers.update({'Access-Control-Allow-Origin': '*', \
-                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+            response.headers.update({
+                'Access-Control-Allow-Origin': 'http://localhost:3000', \
+                "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+            })
             return response
 
     # Edit a deck
@@ -138,8 +142,8 @@ def api_deck(request):
         if ("title" not in params) or ("color" not in params) or (
             "cards" not in params) or ("deckid" not in params):
             return exc.HTTPBadRequest()
-        elif type(params["deckid"]) != int:
-            return exc.HTTPBadRequest()
+        # elif type(params["deckid"]) != int:
+        #     return exc.HTTPBadRequest()
 
         deck_id = params['deckid']
         with transaction.manager:
@@ -166,8 +170,11 @@ def api_deck(request):
             results['color'] = str(db_deck.color)
 
             response = Response(body=json.dumps(results))
-            response.headers.update({'access-control-allow-origin': '*',
-                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+            response.headers.update({
+                'access-control-allow-origin': 'http://localhost:3000',
+                "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+            })
             return response
 
     # Delete a deck
@@ -175,8 +182,8 @@ def api_deck(request):
         # Error handler: check correct query
         if "deckid" not in params:
             return exc.HTTPBadRequest()
-        elif type(params["deckid"]) != int:
-            return exc.HTTPBadRequest()
+        # elif type(params["deckid"]) != int:
+        #     return exc.HTTPBadRequest()
 
         deck_id = params['deckid']
         with transaction.manager:
@@ -193,41 +200,45 @@ def api_deck(request):
     return {'status': 'NOT OK'}
 
 
-@view_config(route_name='api_card', renderer = 'json')
-def api_card(request):
+# Create a new card
+@view_config(route_name='api_card_add', renderer = 'json')
+def api_card_add(request):
     method = request.method
     params = request.body
-    print request.method
 
-    # To answer the chrome?
+    # print "**************"
+    # print "LOOK HERE FOR PARAMETERS"
+
+    # Answer Chrome
     if method == 'OPTIONS':
         response = Response()
-        response.headers.update({'Access-Control-Allow-Origin': '*', \
-            "Access-Control-Allow-Method": 'GET, POST, PUT, DELETE, OPTIONS', \
-            "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+        response.headers.update({
+            'Access-Control-Allow-Origin': 'http://localhost:3000', \
+            "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+            "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+        })
         return response
 
-    # params = request.json_body
     params = json.loads(params)
 
-    # Create card
+    # Create a new card
     if method == 'POST':
         # Error handler: check for correct query
-        if ("term" not in params) or ("definition" not in params) or ("deckid" not in params):
-            return exc.HTTPBadRequest()
-        elif type(params["deckid"]) != int:
+        if ("term" not in params) or ("definition" not in params) or (
+            "deckid" not in params):
             return exc.HTTPBadRequest()
 
         deckid = int(params['deckid'])
         with transaction.manager:
-            deck_list= DBSession.query(Deck).filter(Deck.id==deckid)
+            deck_list = DBSession.query(Deck).filter(Deck.id == deckid)
 
             # Error handler: check if deck exists
             if deck_list.count() == 0:
                 return exc.HTTPNotFound()
 
             db_deck = deck_list.first()
-            new_card = Card(term=params['term'], definition=params['definition'])
+            new_card = Card(term=params['term'],
+                            definition=params['definition'])
             DBSession.add(new_card)
             db_deck.cards.append(new_card)
 
@@ -238,22 +249,78 @@ def api_card(request):
 
             # Return results
             response = Response(body=json.dumps(results))
-            response.headers.update({'Access-Control-Allow-Origin': '*', \
-                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
-            return response
+            response.headers.update({
+                'Access-Control-Allow-Origin': 'http://localhost:3000', \
+                "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+            })
+    return response
+
+
+# Edit or delete a card
+@view_config(route_name='api_card', renderer = 'json')
+def api_card(request):
+    method = request.method
+    params = request.body
+    url_param = request.params   # {"cardid": id}
+    print "*******************"
+    print "LOOOK"
+    print "LOOOOOOOOOK URL" + str(url_param)
+
+    # Error handler
+    # if ("deckid" not in params) or ("term" not in params) or \
+    #         ("definition" not in params):
+    #     return exc.HTTPBadRequest
+
+    # Answer Chrome
+    if method == 'OPTIONS':
+        response = Response()
+        response.headers.update({
+            'Access-Control-Allow-Origin': 'http://localhost:3000', \
+            "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+            "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+        })
+        return response
+
+    params = json.loads(params)
 
     # Edit a card
-    elif method == 'PUT':
-        # Error handler: check for correct query
-        if ("term" not in params) or ("definition" not in params) or ("cardid" not in params):
-            return exc.HTTPBadRequest()
-        elif type(params["cardid"]) != int:
-            return exc.HTTPBadRequest()
+    # elif method == 'PUT':
+    #     # Error handler: check for correct query
+    #     if ("term" not in params) or ("definition" not in params) or ("cardid" not in params):
+    #         return exc.HTTPBadRequest()
+    #
+    #     cardid = params['cardid']
+    #     with transaction.manager:
+    #         card_list = DBSession.query(Card).filter(Card.id==cardid)
+    #
+    #         # Error handler: check if card exists
+    #         if card_list.count() == 0:
+    #             return exc.HTTPNotFound()
+    #
+    #         db_card = card_list.first()
+    #         deckid = db_card.deck_id
+    #         db_card.term = params['term']
+    #         db_card.definition = params['definition']
+    #
+    #         deck_list= DBSession.query(Deck).filter(Deck.id==deckid)
+    #
+    #         # Error handler: check if the card has a corresponding deck
+    #         if deck_list.count() == 0:
+    #             return exc.HTTPNotFound()
+    #         db_deck = deck_list.first()
+    #
+    #         # build the response
+    #         results = card2dict(db_deck.cards)
+    #         results['id'] = int(db_deck.id)
+    #         results['color'] = str(db_deck.color)
+    #         results['title'] = str(db_deck.title)
 
-        cardid = params['cardid']
+    # Update a card
+    if method == "PUT":
+        cardid = url_param['cardid']
         with transaction.manager:
-            card_list = DBSession.query(Card).filter(Card.id==cardid)
-
+            card_list = DBSession.query(Card).filter(Card.id == cardid)
             # Error handler: check if card exists
             if card_list.count() == 0:
                 return exc.HTTPNotFound()
@@ -278,19 +345,19 @@ def api_card(request):
 
             # Return results
             response = Response(body=json.dumps(results))
-            response.headers.update({'access-control-allow-origin': '*', \
-                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+            response.headers.update({
+                'Access-Control-Allow-Origin': '*', \
+                "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+            })
             return response
 
-    # Delete a card
+    # Delete a card NEED CHANGE
     elif method == 'DELETE':
         # Error handler: check for correct query
-        if ("cardid" not in params):
-            return exc.HTTPBadRequest()
-        elif type(params["cardid"]) != int:
-            return exc.HTTPBadRequest()
-
-        cardid = params['cardid']
+        # if ("cardid" not in params):
+        #     return exc.HTTPBadRequest()
+        cardid = url_param['cardid']
         with transaction.manager:
             card_list = DBSession.query(Card).filter(Card.id==cardid)
             # Error handler: check if card exists
@@ -311,8 +378,11 @@ def api_card(request):
 
             # Return results 
             response = Response(body=json.dumps(results))
-            response.headers.update({'access-control-allow-origin': '*', \
-                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+            response.headers.update({
+                'access-control-allow-origin': '*', \
+                "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+                "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+            })
             return response
     return {'status': 'NOT OK'}
 
@@ -330,8 +400,11 @@ def get_decks(request):
             decks.append(deck)
 
     response = Response(body=json.dumps(decks))
-    response.headers.update({'access-control-allow-origin': 'http://localhost:3000', \
-        "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+    response.headers.update({
+        'Access-control-allow-origin': 'http://localhost:3000', \
+        "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+        "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+    })
     return response
 
 
@@ -352,8 +425,11 @@ def get_deck(request):
         deck['id'] = idx
     
     response = Response(body=json.dumps(deck))    
-    response.headers.update({'access-control-allow-origin': 'http://localhost:3000', \
-        "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"})
+    response.headers.update({
+        'access-control-allow-origin': 'http://localhost:3000', \
+        "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+        "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
+    })
     return response
     # return Response(
     #     body=USER1_DECKS,
