@@ -200,14 +200,13 @@ def api_deck(request):
     return {'status': 'NOT OK'}
 
 
-# Create a new card
 @view_config(route_name='api_card_add', renderer = 'json')
 def api_card_add(request):
+    """
+    Create a new card
+    """
     method = request.method
     params = request.body
-
-    # print "**************"
-    # print "LOOK HERE FOR PARAMETERS"
 
     # Answer Chrome
     if method == 'OPTIONS':
@@ -257,33 +256,29 @@ def api_card_add(request):
     return response
 
 
-# Edit or delete a card
 @view_config(route_name='api_card', renderer = 'json')
 def api_card(request):
+    """
+    Edit or Delete A Card
+    """
     method = request.method
-    params = request.body
-    url_param = request.params   # {"cardid": id}
-    print "*******************"
-    print "LOOOK"
-    print "LOOOOOOOOOK URL" + str(url_param)
-
-    # Error handler
-    # if ("deckid" not in params) or ("term" not in params) or \
-    #         ("definition" not in params):
-    #     return exc.HTTPBadRequest
+    url_param = request.matchdict  # {"cardid": id}
+    # print "*******************"
+    # print "LOOOOOOOOOK Param is " + str(url_param)
+    # print request.url
+    # print "OLD PARAM IS" + str(params)
+    #
+    # print "PARAM IS" + str(params)
 
     # Answer Chrome
     if method == 'OPTIONS':
         response = Response()
         response.headers.update({
-            'Access-Control-Allow-Origin': 'http://localhost:3000', \
-            "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
+            'Access-Control-Allow-Origin': '*',
+            "Access-Control-Allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
             "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
         })
         return response
-
-    params = json.loads(params)
-
     # Edit a card
     # elif method == 'PUT':
     #     # Error handler: check for correct query
@@ -315,10 +310,13 @@ def api_card(request):
     #         results['id'] = int(db_deck.id)
     #         results['color'] = str(db_deck.color)
     #         results['title'] = str(db_deck.title)
+    print "Checkpoint 0"
 
     # Update a card
     if method == "PUT":
-        cardid = url_param['cardid']
+        params = request.body
+        params = json.loads(params)
+        cardid = int(url_param['cardid'])
         with transaction.manager:
             card_list = DBSession.query(Card).filter(Card.id == cardid)
             # Error handler: check if card exists
@@ -352,17 +350,16 @@ def api_card(request):
             })
             return response
 
-    # Delete a card NEED CHANGE
+    # Delete a card
     elif method == 'DELETE':
-        # Error handler: check for correct query
-        # if ("cardid" not in params):
-        #     return exc.HTTPBadRequest()
-        cardid = url_param['cardid']
+        cardid = int(url_param['cardid'])
+        print "LOOOOOOK CARD ID IS " + str(cardid)
+        print ""
         with transaction.manager:
             card_list = DBSession.query(Card).filter(Card.id==cardid)
             # Error handler: check if card exists
-            if card_list.count() == 0:
-                return exc.HTTPNotFound()
+            # if card_list.count() == 0:
+            #     return exc.HTTPNotFound()
 
             db_card = card_list.first()
             deckid = db_card.deck_id
@@ -378,6 +375,7 @@ def api_card(request):
 
             # Return results 
             response = Response(body=json.dumps(results))
+            # response = Response()
             response.headers.update({
                 'access-control-allow-origin': '*', \
                 "Access-Control-allow-methods": 'GET, POST, PUT, DELETE, OPTIONS', \
