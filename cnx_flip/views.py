@@ -99,7 +99,7 @@ def api_deck(request):
     # Create a deck
     if method == 'POST':
         # Error handler: check correct query
-        if ("title" not in params) or ("color" not in params) or (
+        if ("name" not in params) or ("color" not in params) or (
             "cards" not in params):
             return exc.HTTPBadRequest()
 
@@ -112,12 +112,12 @@ def api_deck(request):
 
             user = user_list.first()
 
-            # Error handler: check if new deck title conflicts existing titles
-            same_title_deck = DBSession.query(Deck).filter(Deck.title == params["title"] and Deck.user_id == user.id)
-            if same_title_deck.count() != 0:
+            # Error handler: check if new deck name conflicts existing names
+            same_name_deck = DBSession.query(Deck).filter(Deck.name == params["name"] and Deck.user_id == user.id)
+            if same_name_deck.count() != 0:
                 return exc.HTTPConflict()
 
-            new_deck = Deck(title=params['title'], color=params['color'])
+            new_deck = Deck(name=params['name'], color=params['color'])
             DBSession.add(new_deck)
             user.decks.append(new_deck)
 
@@ -125,7 +125,7 @@ def api_deck(request):
             results = {}
             results['cards'] = []
             results['id'] = int(new_deck.id)
-            results['title'] = str(new_deck.title)
+            results['name'] = str(new_deck.name)
             results['color'] = str(new_deck.color)
 
             response = Response(body=json.dumps(results))
@@ -139,7 +139,7 @@ def api_deck(request):
     # Edit a deck
     elif method == 'PUT':
         # Error handling: check correct query
-        if ("title" not in params) or ("color" not in params) or (
+        if ("name" not in params) or ("color" not in params) or (
             "cards" not in params) or ("deckid" not in params):
             return exc.HTTPBadRequest()
         # elif type(params["deckid"]) != int:
@@ -154,19 +154,19 @@ def api_deck(request):
                 return exc.HTTPNotFound()
 
             db_deck = deck_list.first()
-            same_title_deck = DBSession.query(Deck).filter(Deck.title == params['title'] and Deck.user_id == db_deck.user_id)
+            same_name_deck = DBSession.query(Deck).filter(Deck.name == params['name'] and Deck.user_id == db_deck.user_id)
 
-            # Error handler: check for duplicate titles
-            if same_title_deck.count() != 0:
+            # Error handler: check for duplicate names
+            if same_name_deck.count() != 0:
                 return exc.HTTPConflict()
 
-            db_deck.title = params['title']
+            db_deck.name = params['name']
             db_deck.color = params['color']
 
             # Build the response
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
-            results['title'] = str(db_deck.title)
+            results['name'] = str(db_deck.name)
             results['color'] = str(db_deck.color)
 
             response = Response(body=json.dumps(results))
@@ -244,7 +244,7 @@ def api_card_add(request):
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
             results['color'] = str(db_deck.color)
-            results['title'] = str(db_deck.title)
+            results['name'] = str(db_deck.name)
 
             # Return results
             response = Response(body=json.dumps(results))
@@ -309,7 +309,7 @@ def api_card(request):
     #         results = card2dict(db_deck.cards)
     #         results['id'] = int(db_deck.id)
     #         results['color'] = str(db_deck.color)
-    #         results['title'] = str(db_deck.title)
+    #         results['name'] = str(db_deck.name)
     print "Checkpoint 0"
 
     # Update a card
@@ -339,7 +339,7 @@ def api_card(request):
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
             results['color'] = str(db_deck.color)
-            results['title'] = str(db_deck.title)
+            results['name'] = str(db_deck.name)
 
             # Return results
             response = Response(body=json.dumps(results))
@@ -371,7 +371,7 @@ def api_card(request):
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
             results['color'] = str(db_deck.color)
-            results['title'] = str(db_deck.title)
+            results['name'] = str(db_deck.name)
 
             # Return results 
             response = Response(body=json.dumps(results))
@@ -392,7 +392,7 @@ def get_decks(request):
         decks_query = DBSession.query(Deck).all()
         for deck_object in decks_query:
             deck = card2dict(deck_object.cards)
-            deck['title'] = str(deck_object.title)
+            deck['name'] = str(deck_object.name)
             deck['color'] = 'Green'
             deck['id'] = int(deck_object.id)
             decks.append(deck)
@@ -418,7 +418,7 @@ def get_deck(request):
     with transaction.manager:
         decks_query = DBSession.query(Deck).filter(Deck.id==idx).first()
         deck = card2dict(decks_query.cards)
-        deck['title'] = str(decks_query.title)
+        deck['name'] = str(decks_query.name)
         deck['color'] = 'Green'
         deck['id'] = idx
     
@@ -448,9 +448,9 @@ def get_deck(request):
 # @view_config(route_name='add_deck', renderer = 'json')
 # def add_deck(request):
 #     req_post = request.POST
-#     title = str(req_post['title'])
+#     name = str(req_post['name'])
 #     color = str(req_post['color'])
 #     with transaction.manager:
-#         model = Deck(title=title, color=color)
+#         model = Deck(name=name, color=color)
 #         DBSession.add(model)
 #     return {'add deck': 'success'}
