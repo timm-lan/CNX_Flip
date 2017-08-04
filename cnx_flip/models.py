@@ -73,7 +73,6 @@ class Card(Base):
     id = Column(Integer, primary_key=True)
     term = Column(Text)
     definition = Column(Text)
-
     deck_id = Column(Integer, ForeignKey('decks.id'))
    
     # decks = relationship("Deck", back_populates="cards")
@@ -81,7 +80,6 @@ class Card(Base):
     # This is for many to many
     # decks = relationship("Deck", secondary=map_table_deckcard, back_populates="cards")
 
-# ??
 class Root(object):
 #     __acl__ = [(Allow, Everyone, 'view'),
 #                (Allow, 'group:editors', 'edit')]
