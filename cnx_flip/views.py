@@ -55,7 +55,8 @@ def update_header(body):
 def get_params(request):
     method = request.method
     params = request.body
-    url_params = request.matchdict
+    url_param = request.matchdict
+    return method, params, url_param
 
 
 @view_config(route_name='home', renderer='templates/index.html.jinja2')
@@ -74,11 +75,12 @@ def update(request):
     put_stuff_in_db()
     return {'update': 'success'}
 
+
 def get_decks(request):
     """
     Helper function for loading a list of decks on the deck page
     """
-    method = request.method
+    method, params, url_param = get_params(request)
 
     # To answer Chrome
     if method == 'OPTIONS':
@@ -105,8 +107,7 @@ def api_deck(request):
     GET, POST, PUT, DELETE
     Get a list of decks
     """
-    method = request.method
-    url_params = request.matchdict
+    method, params, url_param = get_params(request)
 
     # To answer Chrome
     if method == 'OPTIONS':
@@ -114,9 +115,9 @@ def api_deck(request):
 
     # Get a deck
     if method == "GET":
-        if len(url_params['deckid']) == 0:
+        if len(url_param['deckid']) == 0:
             return get_decks(request)
-        deck_idx = url_params["deckid"]
+        deck_idx = url_param["deckid"]
         with transaction.manager:
             target_deck = DBSession.query(Deck).filter(
                 Deck.id == deck_idx).first()
@@ -175,11 +176,11 @@ def api_deck(request):
         # if ("title" not in params) or ("color" not in params) or (
         #     "cards" not in params) or ("id" not in params):
         #     return exc.HTTPBadRequest()
-        params = request.body
+        # params = request.body
         params = json.loads(params)
         print "PARAMS ARE " + str(params)
 
-        deck_id = url_params['deckid']
+        deck_id = url_param['deckid']
         with transaction.manager:
             deck_list = DBSession.query(Deck).filter(Deck.id == deck_id)
 
@@ -209,7 +210,7 @@ def api_deck(request):
 
     # Delete a deck
     elif method == 'DELETE':
-        deck_id = url_params['deckid']
+        deck_id = url_param['deckid']
         with transaction.manager:
             deck_list = DBSession.query(Deck).filter(Deck.id==deck_id)
 
@@ -232,8 +233,7 @@ def api_card(request):
     Create, Update or Delete a card
     via POST, PUT, DELETE methods
     """
-    method = request.method
-    url_param = request.matchdict
+    method, params, url_param = get_params(request)
 
     # Answer Chrome
     if method == 'OPTIONS':
@@ -241,7 +241,6 @@ def api_card(request):
 
     # Add a card
     if method == "POST":
-        params = request.body
         params = json.loads(params)
 
         if ("term" not in params) or ("definition" not in params) or (
@@ -273,7 +272,6 @@ def api_card(request):
 
     # Update a card
     elif method == "PUT":
-        params = request.body
         params = json.loads(params)
         cardid = int(url_param['cardid'])
         with transaction.manager:
@@ -308,7 +306,6 @@ def api_card(request):
     # Delete a card
     elif method == 'DELETE':
         cardid = int(url_param['cardid'])
-        print "LOOOOOOK CARD ID IS " + str(cardid)
         with transaction.manager:
             card_list = DBSession.query(Card).filter(Card.id == cardid)
             #Error handler: check if card exists
