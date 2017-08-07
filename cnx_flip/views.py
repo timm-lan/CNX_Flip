@@ -53,6 +53,9 @@ def update_header(body):
 
 
 def get_params(request):
+    """
+    Retrieve parameters of a request
+    """
     method = request.method
     params = request.body
     url_param = request.matchdict
@@ -86,7 +89,7 @@ def get_decks(request):
     if method == 'OPTIONS':
         return preflight_handler(request)
 
-    # Load the decks
+    # Load the decks of a user
     decks = [];
     with transaction.manager:
         decks_query = DBSession.query(Deck).all()
@@ -108,19 +111,22 @@ def api_deck(request):
     Get a list of decks
     """
     method, params, url_param = get_params(request)
-
+    print "YOU ARE AT API DECK"
     # To answer Chrome
     if method == 'OPTIONS':
         return preflight_handler(request)
 
-    # Get a deck
+    # Get decks
     if method == "GET":
+        # Get decks
         if len(url_param['deckid']) == 0:
             return get_decks(request)
+
         deck_idx = url_param["deckid"]
+        user_idx = url_param["userid"]
         with transaction.manager:
             target_deck = DBSession.query(Deck).filter(
-                Deck.id == deck_idx).first()
+                Deck.id == deck_idx and Deck.user_id == user_idx).first()
             deck = card2dict(target_deck.cards)
             deck['title'] = str(target_deck.title)
             deck['color'] = str(target_deck.color)
@@ -131,15 +137,19 @@ def api_deck(request):
 
     # Create a new deck
     elif method == 'POST':
+        print "YOU ARE CREATING A NEW DECK"
+        userid = int(url_param["userid"])
+        print "USER ID is " + str(userid)
         with transaction.manager:
-            user_list = DBSession.query(User).filter(User.user_name==USER)
-
+            user_list = DBSession.query(User).filter(User.id==userid)
+            print "USER LIST IS " + str(user_list.count())
             # Error handler: check if user exists
             if user_list.count() == 0:
                 return exc.HTTPNotFound()
             user = user_list.first()
+            print "USER IS" + str(user)
 
-            # Assign default title and color to the new deck
+            # Assign a default title to the new deck
             deck_name = "untitled"
             same_title_deck = DBSession.query(Deck)\
                 .filter(Deck.title == deck_name and Deck.user_id == user.id)
@@ -234,13 +244,14 @@ def api_card(request):
     via POST, PUT, DELETE methods
     """
     method, params, url_param = get_params(request)
-
+    print "URL PARAM IS " + str(url_param)
     # Answer Chrome
     if method == 'OPTIONS':
         return preflight_handler(request)
 
     # Add a card
     if method == "POST":
+        print "YOU ARE ADDING A CARD"
         params = json.loads(params)
 
         if ("term" not in params) or ("definition" not in params) or (
@@ -248,8 +259,11 @@ def api_card(request):
             return exc.HTTPBadRequest()
 
         deckid = int(params['deckid'])
+        userid = int(url_param['userid'])
+        print "USER ID is " + str(userid)
         with transaction.manager:
-            deck_list = DBSession.query(Deck).filter(Deck.id == deckid)
+            deck_list = DBSession.query(Deck).filter(
+                Deck.id == deckid and Deck.user_id == userid)
 
             # Error handler: check if deck exists
             if deck_list.count() == 0:
