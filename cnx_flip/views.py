@@ -122,15 +122,15 @@ def api_deck(request):
         if len(url_param['deckid']) == 0:
             return get_decks(request)
 
-        deck_idx = url_param["deckid"]
-        user_idx = url_param["userid"]
+        deck_id = url_param["deckid"]
+        user_id = url_param["userid"]
         with transaction.manager:
             target_deck = DBSession.query(Deck).filter(
-                Deck.id == deck_idx and Deck.user_id == user_idx).first()
+                Deck.id == deck_id and Deck.user_id == user_id).first()
             deck = card2dict(target_deck.cards)
             deck['title'] = str(target_deck.title)
             deck['color'] = str(target_deck.color)
-            deck['id'] = deck_idx
+            deck['id'] = deck_id
 
             response = update_header(body=json.dumps(deck))
             return response
