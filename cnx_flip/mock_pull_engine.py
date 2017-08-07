@@ -1,5 +1,8 @@
 from .models import *
 import transaction
+import urllib2
+import json
+import xml.etree.ElementTree as ET
 
 
 mockCardsInTestDeck1 = {'deck_name': 'test_deck1',
@@ -48,4 +51,59 @@ def put_stuff_in_db():
             else:
                 admin = admin.first()
             admin.decks.append(deck_tmp)
-        
+
+def importCardsFromCnxDb(uuid, deckid, cnxdbHost):
+    # Build the request.
+    # http://localhost:6543/xpath?id=e79ffde3-7fb4-4af3-9ec8-df648b391597&q=//*[local-name()=%22meaning%22]
+    request_headers = {
+        "Accept" : "application/json"
+        # "Authorization" : "Bearer 6879-1aVn-THALZjt82mlGqFRZZKMDV4Db1pGy0iO5xjUbeo"
+    }
+    request_url = cnxdbHost + "/xpath?id=" + uuid + "&q=//*[local-name()=%22definition%22]"
+    request = urllib2.Request(request_url, headers=request_headers)
+    response = urllib2.urlopen(request).read()
+    response = json.loads(response)
+    
+    # Error handling
+    for module in response['results']:
+        for term_def_wrap in module['xpath_results']:
+            tree = ET.fromstring(term_def_wrap.encode('utf-8'))
+            if len(tree) < 2 or tree[1].text == None:
+                continue;
+
+            term = tree[0].text.encode('utf-8')
+            definition = tree[1].text.encode('utf-8')
+            with transaction.manager:
+                deck_tmp = DBSession.query(Deck).filter(Deck.id==deckid)
+                card_tmp = Card(term=term, definition=definition, deck_id=deckid)
+                deck_tmp.append(card_tmp)
+            
+            
+
+
+
+
+
+
+       
+
+
+# if __name__ == "__main__":
+#     importCardsFromCnxDb("e79ffde3-7fb4-4af3-9ec8-df648b391597", 1, "http://localhost:6543")
+    # 5152cea8-829a-4aaf-bcc5-c58a416ecb66
+    # importCardsFromCnxDb("5152cea8-829a-4aaf-bcc5-c58a416ecb66", 1, "http://localhost:6543")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
