@@ -9,7 +9,7 @@ def main(global_config, **settings):
     """
 #     engine = engine_from_config(settings, 'sqlalchemy.')
 
-    engine = create_engine('postgresql+psycopg2://Tim:Qasdew123@localhost/flashcarddb')
+    engine = create_engine('postgresql+psycopg2://zhiyangzhang:Qasdew123@localhost/flashcarddb')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
 

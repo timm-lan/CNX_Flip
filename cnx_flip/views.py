@@ -344,6 +344,34 @@ def api_card(request):
             return response
     return {'status': 'NOT OK'}
 
+
+# @view_config(route_name='api_textbook', renderer='json')
+# def api_textbook(request):
+#     method, params, url_param = get_params(request)
+#     if method == 'OPTIONS':
+#         return preflight_handler(request)
+#
+#     # Get a deck from database
+#     if method == "GET":
+#         params = json.loads(params)
+#         deckid = int(params['deckid'])
+#         uuid_list = params['uuids']
+#     for uuid in uuid_list:
+#         importCardsFromCnxDb(uuid, deckid, cnxdbHost)
+#
+#     with transaction.manager:
+#         target_deck = DBSession.query(Deck).filter(Deck.id == deckid).first()
+#         deck = card2dict(target_deck.cards)
+#         deck['title'] = str(target_deck.title)
+#         deck['color'] = str(target_deck.color)
+#         deck['id'] = deck_id
+#
+#         response = update_header(body=json.dumps(deck))
+#         return response
+
+
+
+
 # @view_config(route_name='add_user', renderer = 'json')
 # def add_user(request):
 #     req_post = request.POST
