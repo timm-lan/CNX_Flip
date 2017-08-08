@@ -199,12 +199,12 @@ def api_deck(request):
                 return exc.HTTPNotFound()
 
             db_deck = deck_list.first()
-            same_title_deck = DBSession.query(Deck)\
-                .filter(Deck.title == params['title'] and Deck.user_id == db_deck.user_id)
-
-            # Error handler: check for duplicate titles
-            if same_title_deck.count() != 0:
-                return exc.HTTPConflict()
+            # same_title_deck = DBSession.query(Deck)\
+            #     .filter(Deck.title == params['title'] and Deck.user_id == db_deck.user_id)
+            #
+            # # Error handler: check for duplicate titles
+            # if same_title_deck.count() != 0:
+            #     return exc.HTTPConflict()
 
             db_deck.title = params['title']
             db_deck.color = params['color']
