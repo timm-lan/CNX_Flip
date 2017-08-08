@@ -16,3 +16,5 @@ curl -H "Content-Type: application/json" -X PUT -d '{"deckid":5, "title": "chang
 
 *** Delete a deck ***
 curl -H "Content-Type: application/json" -X DELETE -d '{"deckid": 7}' http://localhost:5000/api/decks
+
+curl -H "Content-Type: application/json" -X POST -d '{"deckid":14,"uuids":["e79ffde3-7fb4-4af3-9ec8-df648b391597"]}' http://localhost:5000/api/textbook/1

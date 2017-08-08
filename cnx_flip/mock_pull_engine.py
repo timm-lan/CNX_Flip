@@ -74,9 +74,9 @@ def importCardsFromCnxDb(uuid, deckid, cnxdbHost):
             term = tree[0].text.encode('utf-8')
             definition = tree[1].text.encode('utf-8')
             with transaction.manager:
-                deck_tmp = DBSession.query(Deck).filter(Deck.id==deckid)
+                deck_tmp = DBSession.query(Deck).filter(Deck.id==deckid).first()
                 card_tmp = Card(term=term, definition=definition, deck_id=deckid)
-                deck_tmp.append(card_tmp)
+                deck_tmp.cards.append(card_tmp)
 
 # if __name__ == "__main__":
 #     importCardsFromCnxDb("e79ffde3-7fb4-4af3-9ec8-df648b391597", 1, "http://localhost:6543")
