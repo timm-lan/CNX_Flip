@@ -1,7 +1,7 @@
 alembic==0.9.2
 beautifulsoup4==4.6.0
 Chameleon==3.1
--e git+https://github.com/tianlantianlan95/CNX_Flip@22c74018ba54138fdf396202eed775c6631697d9#egg=cnx_flip
+-e git+https://github.com/tianlantianlan95/CNX_Flip@df1dbba17fca8aeda7143dc9ea0db6ec2378cd54#egg=cnx_flip
 coverage==4.4.1
 decorator==4.0.11
 ez-setup==0.9
@@ -33,6 +33,7 @@ python-editor==1.0.3
 repoze.lru==0.6
 six==1.10.0
 SQLAlchemy==1.1.10
+SQLAlchemy-Utils==0.32.14
 tqdm==4.11.2
 transaction==2.1.2
 translationstring==1.3

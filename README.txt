@@ -6,29 +6,34 @@ Getting Started
 
 - Change directory into your newly created project.
 
-    cd cnx_flip
+    cd CNX_FLIP
 
 - Create a Python virtual environment.
 
-    python3 -m venv env
+    virtualenv .venv --python=python2.7
 
-- Upgrade packaging tools.
+- Activate vitual environment (for Mac)
+    
+    source .venv/bin/activate
 
-    env/bin/pip install --upgrade pip setuptools
+- Install
 
-- Install the project in editable mode with its testing requirements.
+    pyton setup.py install
 
-    env/bin/pip install -e ".[testing]"
+- Run your project's tests (not many tests now but).
 
-- Run your project's tests.
+    pytest
 
-    env/bin/pytest
+-Initialize db
+    initialize_db development.ini
 
 - Run your project.
 
-    env/bin/pserve development.ini
+    pserve development.ini --reload
+
 
 Curl commands for testing api:
+------------------------------
 *** Add a card ***
 curl -H "Content-Type: application/json" -X POST -d '{"deckid":5,"term":"PENTALON", "definition":"PANTS"}' http://localhost:5000/api/cards/
 

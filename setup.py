@@ -17,6 +17,7 @@ requires = [
     'sqlalchemy',
     'zope.sqlalchemy',
     'pyramid_tm',
+    'sqlalchemy_utils',
 ]
 
 tests_require = [
