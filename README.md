@@ -1,4 +1,5 @@
 cnx_flip
+front-end repo: https://github.com/caderitter/cnx-flip-angular
 ========
 
 Getting Started
@@ -30,6 +31,7 @@ Getting Started
 - Run your project.
 
     pserve development.ini --reload
+
 
 
 Curl commands for testing api:
