@@ -1,11 +1,14 @@
-from .models import *
+from cnx_flip.models import *
+from .db import *
 import transaction
 import urllib2
 import json
 import xml.etree.ElementTree as ET
 
 
-mockCardsInTestDeck1 = {'deck_name': 'test_deck1',
+
+def test_db():
+    mockCardsInTestDeck1 = {'deck_name': 'test_deck1',
                         'cards': [Card(term='term1', definition='def1'), \
                         Card(term='term2', definition='def2'), \
                         Card(term='term3', definition='def3'), \
@@ -13,7 +16,7 @@ mockCardsInTestDeck1 = {'deck_name': 'test_deck1',
                         Card(term='term5', definition='def5'), \
                         Card(term='term6', definition='def6'), \
                         Card(term='term7', definition='def7')]}
-mockCardsInTestDeck2 = {'deck_name': 'test_deck2',
+    mockCardsInTestDeck2 = {'deck_name': 'test_deck2',
                         'cards':[Card(term='TERM1', definition='DEF1'), \
                         Card(term='TERM2', definition='DEF2'), \
                         Card(term='TERM3', definition='DEF3'), \
@@ -21,7 +24,7 @@ mockCardsInTestDeck2 = {'deck_name': 'test_deck2',
                         Card(term='TERM5', definition='DEF5'), \
                         Card(term='TERM6', definition='DEF6'), \
                         Card(term='TERM7', definition='DEF7')]}
-mockCardsInTestDeck3 = {'deck_name': 'test_deck3',
+    mockCardsInTestDeck3 = {'deck_name': 'test_deck3',
                         'cards':[Card(term='haha1', definition='DEFINITION1'), \
                         Card(term='haha2', definition='DEFINITION2'), \
                         Card(term='haha3', definition='DEFINITION3'), \
@@ -29,8 +32,7 @@ mockCardsInTestDeck3 = {'deck_name': 'test_deck3',
                         Card(term='haha5', definition='DEFINITION5'), \
                         Card(term='haha6', definition='DEFINITION6'), \
                         Card(term='haha7', definition='DEFINITION7')]}
-mockdecks = [mockCardsInTestDeck1, mockCardsInTestDeck2, mockCardsInTestDeck3]
-def put_stuff_in_db():
+    mockdecks = [mockCardsInTestDeck1, mockCardsInTestDeck2, mockCardsInTestDeck3]
     user_name = 'admin'
     
     with transaction.manager:

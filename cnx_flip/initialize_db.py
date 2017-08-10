@@ -6,7 +6,10 @@ from sqlalchemy import engine_from_config
 
 from pyramid.paster import setup_logging, get_appsettings
 
-from .models import *
+from cnx_flip.models import *
+from cnx_flip.db import *
+from sqlalchemy_utils import *
+from importFromCnxDb import *
 
 
 def usage(argv):
@@ -22,6 +25,12 @@ def main(argv=sys.argv):
     config_uri = argv[1]
     setup_logging(config_uri)
     settings = get_appsettings(config_uri)
+
+    dbUrl = settings['sqlalchemy.url']
+    if database_exists(dbUrl):
+        drop_database(dbUrl)
+    create_database(dbUrl)
+
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
@@ -32,3 +41,4 @@ def main(argv=sys.argv):
         
         model = User(user_name='admin')
         DBSession.add(model)
+    test_db()

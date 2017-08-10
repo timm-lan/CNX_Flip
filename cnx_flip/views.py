@@ -5,8 +5,9 @@ import transaction
 
 from pyramid.view import view_config
 from pyramid.response import Response
-from mock_pull_engine import *
-from .models import * #DBSession, Card, Base
+from .importFromCnxDb import *
+from cnx_flip.models import * #DBSession, Card, Base
+from .db import *
 
 USER = 'admin'
 ORIGIN_URL = 'http://localhost:3000'
@@ -71,7 +72,7 @@ def my_view(request):
     return {'project': 'cnx_flip'}
 
 
-@view_config(route_name='update_from_db', renderer='json')
+@view_config(route_name='test_db', renderer='json')
 def update(request):
     """
     Populate the database
