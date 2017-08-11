@@ -4,25 +4,25 @@ from .requestService import *
 from .formatResultsService import *
 from .responseService import *
 
-ORIGIN_URL = '*'
-
-def card_http_request(request, ori_url):    
+def card_http_request(request, origin_url):    
     """
-    Create, Update or Delete a card
-    via POST, PUT, DELETE methods
+    Create, Update or Delete a card via POST, PUT, DELETE methods
+    
+    request: http request 
+    origin_url: host url
     """
-    ORIGIN_URL = ori_url
     method, params, url_param = get_params(request)
-    print "URL PARAM IS " + str(url_param)
+
     # Answer Chrome
     if method == 'OPTIONS':
-        return preflight_handler(request, ORIGIN_URL)
+        return preflight_handler(request, origin_url)
 
     # Add a card
     if method == "POST":
         print "YOU ARE ADDING A CARD"
         params = json.loads(params)
 
+        # Error handler
         if ("term" not in params) or ("definition" not in params) or (
             "deckid" not in params):
             return exc.HTTPBadRequest()
@@ -30,6 +30,7 @@ def card_http_request(request, ori_url):
         deckid = int(params['deckid'])
         userid = int(url_param['userid'])
         print "USER ID is " + str(userid)
+
         with transaction.manager:
             deck_list = DBSession.query(Deck).filter(
                 Deck.id == deckid and Deck.user_id == userid)
@@ -50,11 +51,13 @@ def card_http_request(request, ori_url):
             results['title'] = str(db_deck.title)
 
             # Return results
-            response = update_header(json.dumps(results), ORIGIN_URL)
+            response = update_header(json.dumps(results), origin_url)
             return response
 
     # Update a card
     elif method == "PUT":
+        print "YOU ARE UPDATING A CARD"
+
         params = json.loads(params)
         cardid = int(url_param['cardid'])
         with transaction.manager:
@@ -83,11 +86,13 @@ def card_http_request(request, ori_url):
             results['title'] = str(db_deck.title)
 
             # Return results
-            response = update_header(json.dumps(results), ORIGIN_URL)
+            response = update_header(json.dumps(results), origin_url)
             return response
 
     # Delete a card
     elif method == 'DELETE':
+        print "YOU ARE DELETING A CARD"
+
         cardid = int(url_param['cardid'])
         with transaction.manager:
             card_list = DBSession.query(Card).filter(Card.id == cardid)
@@ -102,13 +107,13 @@ def card_http_request(request, ori_url):
                 synchronize_session='evaluate')
             db_deck = DBSession.query(Deck).filter(Deck.id == deckid).first()
 
-            # build the response of a deck dictionary
+            # Build the response of a deck dictionary
             results = card2dict(db_deck.cards)
             results['id'] = int(db_deck.id)
             results['color'] = str(db_deck.color)
             results['title'] = str(db_deck.title)
 
             # Return results
-            response = update_header(json.dumps(results), ORIGIN_URL)
+            response = update_header(json.dumps(results), origin_url)
             return response
     return {'status': 'NOT OK'}

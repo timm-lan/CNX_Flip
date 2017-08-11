@@ -11,24 +11,46 @@ from .requestService import *
 from .formatResultsService import *
 from .responseService import *
 
-ORIGIN_URL = '*'
 
-def deck_http_request(request, ori_url):
+def get_decks(request):
     """
-    Get, Create, Update or Delete a deck via
-    GET, POST, PUT, DELETE
-    Get a list of decks
+    Helper function for loading a list of decks on the deck page
     """
-    ORIGIN_URL = ori_url
     method, params, url_param = get_params(request)
-    print "YOU ARE AT API DECK"
+
     # To answer Chrome
     if method == 'OPTIONS':
-        return preflight_handler(request, ORIGIN_URL)
+        return preflight_handler(request)
+
+    # Load the decks of a user
+    decks = [];
+    with transaction.manager:
+        decks_query = DBSession.query(Deck).all()
+        for deck_object in decks_query:
+            deck = card2dict(deck_object.cards)
+            deck['title'] = str(deck_object.title)
+            deck['color'] = str(deck_object.color)
+            deck['id'] = int(deck_object.id)
+            decks.append(deck)
+    response = update_header(json.dumps(decks), origin_url)
+    return response
+
+
+def deck_http_request(request, origin_url):
+    """
+    Get, Create, Update or Delete a deck via GET, POST, PUT, DELETE methods
+
+    request: http request
+    origin_url: host url
+    """
+    method, params, url_param = get_params(request)
+
+    # To answer Chrome
+    if method == 'OPTIONS':
+        return preflight_handler(request, origin_url)
 
     # Get decks
     if method == "GET":
-        # Get decks
         if len(url_param['deckid']) == 0:
             return get_decks(request)
 
@@ -42,7 +64,7 @@ def deck_http_request(request, ori_url):
             deck['color'] = str(target_deck.color)
             deck['id'] = deck_id
 
-            response = update_header(json.dumps(deck), ORIGIN_URL)
+            response = update_header(json.dumps(deck), origin_url)
             return response
 
     # Create a new deck
@@ -87,15 +109,11 @@ def deck_http_request(request, ori_url):
             results['title'] = str(new_deck.title)
             results['color'] = str(new_deck.color)
 
-            response = update_header(json.dumps(results), ORIGIN_URL)
+            response = update_header(json.dumps(results), origin_url)
             return response
+
     # Update a deck
     elif method == 'PUT':
-        # Error handling: check correct query
-        # if ("title" not in params) or ("color" not in params) or (
-        #     "cards" not in params) or ("id" not in params):
-        #     return exc.HTTPBadRequest()
-        # params = request.body
         params = json.loads(params)
         print "PARAMS ARE " + str(params)
 
@@ -124,7 +142,7 @@ def deck_http_request(request, ori_url):
             results['title'] = str(db_deck.title)
             results['color'] = str(db_deck.color)
 
-            response = update_header(json.dumps(results), ORIGIN_URL)
+            response = update_header(json.dumps(results), origin_url)
             return response
 
     # Delete a deck
@@ -144,26 +162,3 @@ def deck_http_request(request, ori_url):
                 .delete(synchronize_session="evaluate")
             return {'status': 'delete successful'}
     return {'status': 'NOT OK'}
-
-def get_decks(request):
-    """
-    Helper function for loading a list of decks on the deck page
-    """
-    method, params, url_param = get_params(request)
-
-    # To answer Chrome
-    if method == 'OPTIONS':
-        return preflight_handler(request)
-
-    # Load the decks of a user
-    decks = [];
-    with transaction.manager:
-        decks_query = DBSession.query(Deck).all()
-        for deck_object in decks_query:
-            deck = card2dict(deck_object.cards)
-            deck['title'] = str(deck_object.title)
-            deck['color'] = str(deck_object.color)
-            deck['id'] = int(deck_object.id)
-            decks.append(deck)
-    response = update_header(json.dumps(decks), ORIGIN_URL)
-    return response

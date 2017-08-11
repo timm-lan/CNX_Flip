@@ -4,13 +4,10 @@ from .requestService import *
 from .formatResultsService import *
 from .responseService import *
 
-ORIGIN_URL = '*'
-
-def textbook_http_request(request, ori_url):
-    ORIGIN_URL = ori_url
+def textbook_http_request(request, origin_url):
     method, params, url_param = get_params(request)
     if method == 'OPTIONS':
-        return preflight_handler(request, ORIGIN_URL)
+        return preflight_handler(request, origin_url)
 
     # Get a deck from database
     if method == "POST":
@@ -29,5 +26,5 @@ def textbook_http_request(request, ori_url):
             deck['color'] = str(target_deck.color)
             deck['id'] = deckid
 
-        response = update_header(json.dumps(deck), ORIGIN_URL)
+        response = update_header(json.dumps(deck), origin_url)
         return response

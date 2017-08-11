@@ -8,7 +8,6 @@ class Deck(Base):
     __tablename__= 'decks'
     id = Column(Integer, primary_key=True)
     title = Column(Text)
-    # one to many
     user_id = Column(Integer, ForeignKey('users.id'))
     color = Column(Text)
     cards = relationship("Card")

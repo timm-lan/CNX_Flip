@@ -6,7 +6,6 @@ from cnx_flip.db import Base
 
 class User(Base):
     __tablename__= 'users'
-    
     # autoincrement has to be False
     id = Column(Integer, primary_key=True)
     user_name = Column(Text, unique=True)

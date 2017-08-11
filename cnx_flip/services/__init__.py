@@ -1,4 +1,4 @@
-from .dbService import *
+from .databaseService import *
 from .formatResultsService import *
 from .requestService import *
 from .responseService import *

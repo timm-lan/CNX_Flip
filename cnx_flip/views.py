@@ -6,6 +6,7 @@ import transaction
 from pyramid.view import view_config
 from pyramid.response import Response
 from .importFromCnxDb import *
+
 from cnx_flip.models import * #DBSession, Card, Base
 from cnx_flip.db import *
 from cnx_flip.services import *
@@ -15,7 +16,6 @@ USER = 'admin'
 ORIGIN_URL = 'http://localhost:3000'
 COLORS = ["#15837D", "#EF5F33", "#1B2152", "#1BB3D3",\
           "#B30B26", "#FDB32F", "#F0C916", "#65A234", "#8f8f8f"]
-
 CNXDB_HOST = 'http://localhost:6543'
 
 @view_config(route_name='home', renderer='templates/index.html.jinja2')
@@ -38,25 +38,31 @@ def test_db(request):
 @view_config(route_name='api_deck', renderer='json')
 def api_deck(request):
     """
-    Get, Create, Update or Delete a deck via
-    GET, POST, PUT, DELETE
-    Get a list of decks
+    Get, Create, Update or Delete a deck via GET, POST, PUT, DELETE
+
+    :param request: http request
     """
     return deck_http_request(request, ORIGIN_URL)
 
 
 @view_config(route_name='api_card', renderer='json')
 def api_card(request):
-    # """
-    # Create, Update or Delete a card
-    # via POST, PUT, DELETE methods
-    # """
+    """
+    Create, Update or Delete a card via POST, PUT, DELETE methods
+
+    :param request: http request
+    """
     return card_http_request(request, ORIGIN_URL);
 
 @view_config(route_name='api_textbook', renderer='json')
 def api_textbook(request):
+    """
+    Add terms and definitions pulled from CNX Archive to database
+    :param request: http request
+    """
     return text_http_request(request, ORIGIN_URL)
 
+# Unfinished code for adding users
 # @view_config(route_name='add_user', renderer = 'json')
 # def add_user(request):
 #     req_post = request.POST

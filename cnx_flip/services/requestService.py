@@ -8,10 +8,10 @@ from pyramid.response import Response
 from cnx_flip.models import * #DBSession, Card, Base
 from cnx_flip.db import *
 
-def preflight_handler(request, ori_url):
+def preflight_handler(request, origin_url):
     response = Response()
     response.headers.update({
-        'Access-Control-Allow-Origin': ori_url, \
+        'Access-Control-Allow-Origin': origin_url, \
         "Access-Control-Allow-Methods": 'GET, POST, PUT, DELETE, OPTIONS', \
         "Access-Control-Allow-Headers": "Content-Type,  Authorization, X-Requested-With, X-XSRF-TOKEN"
     })
@@ -21,6 +21,8 @@ def preflight_handler(request, ori_url):
 def get_params(request):
     """
     Retrieve parameters of a request
+
+    return: methods, request body, parameters
     """
     method = request.method
     params = request.body
