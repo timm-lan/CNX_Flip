@@ -235,7 +235,9 @@ def api_deck(request):
                 .delete(synchronize_session="evaluate")
             DBSession.query(Deck).filter(Deck.id==deck_id)\
                 .delete(synchronize_session="evaluate")
-            return {'status': 'delete successful'}
+            res = {'status': 'delete successful'}
+            return update_header(json.dumps(res))
+
     return {'status': 'NOT OK'}
 
 

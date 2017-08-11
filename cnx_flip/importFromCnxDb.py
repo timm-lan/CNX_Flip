@@ -70,8 +70,8 @@ def importCardsFromCnxDb(uuid, deckid, cnxdbHost):
     for module in response['results']:
         for term_def_wrap in module['xpath_results']:
             tree = ET.fromstring(term_def_wrap.encode('utf-8'))
-            if len(tree) < 2 or tree[1].text == None:
-                continue;
+            if len(tree) < 2 or tree[1].text == None or tree[0].text == None:
+                continue
 
             term = tree[0].text.encode('utf-8')
             definition = tree[1].text.encode('utf-8')
